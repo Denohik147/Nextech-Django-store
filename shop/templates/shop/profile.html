@@ -1,0 +1,138 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}
+Personal Account - NexTech
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">
+        👤 Personal Account
+    </h1>
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <h2 class="h4 mb-3">
+                Welcome, {{ user.username }}!
+            </h2>
+
+            <p class="mb-2">
+                <strong>Username:</strong>
+                {{ user.username }}
+            </p>
+
+            <p class="mb-0">
+                <strong>Email:</strong>
+                {{ user.email|default:"not specified" }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <h2 class="h3 mb-4">
+        📦 Order history
+    </h2>
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <div class="card mb-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <h3 class="h5 mb-0">
+                            Order #{{ order.id }}
+                        </h3>
+
+                        <span class="text-muted">
+                            {{ order.created_at|date:"d.m.Y H:i" }}
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <h4 class="h6 mb-3">
+                        Products
+                    </h4>
+
+                    {% for item in order.items.all %}
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+
+                            <div>
+
+                                <strong>
+                                    {{ item.product.name }}
+                                </strong>
+
+                                <span class="text-muted">
+                                    — {{ item.quantity }} pcs.
+                                </span>
+
+                            </div>
+
+                            <div>
+                                {{ item.price|floatformat:2 }} $
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                    <hr>
+
+                    <p class="fs-5 fw-bold mb-0">
+
+                        Total:
+                        {{ order.total|floatformat:2 }} $
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+            <h3 class="h5">
+                There are no orders yet
+            </h3>
+
+            <p class="mb-3">
+                You haven not placed any orders yet.
+            </p>
+
+            <a
+                href="{% url 'home' %}"
+                class="btn btn-primary"
+            >
+                🏠 Go to home page
+            </a>
+
+        </div>
+
+    {% endif %}
+
+    <div class="mt-4">
+
+        <a
+        
+            href="{% url 'home' %}"
+            class="btn btn-outline-secondary"
+        >
+            ← Back to home page
+        </a>
+    </div>
+
+{% endblock %}

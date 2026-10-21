@@ -1,0 +1,261 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}
+Comparison - NexTech
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comparison-page {
+        max-width: 1200px;
+        min-height: 450px;
+        margin: 30px auto;
+        padding: 24px;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+    }
+
+    .comparison-page-title {
+        margin: 0 0 24px;
+        color: #212529;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    .comparison-empty {
+        min-height: 330px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+    }
+
+    .comparison-empty-icon {
+        margin-bottom: 22px;
+        color: #084298;
+        font-size: 4rem;
+        line-height: 1;
+    }
+
+    .comparison-empty h2 {
+        margin-bottom: 12px;
+        color: #212529;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .comparison-empty p {
+        max-width: 460px;
+        margin: 0 0 22px;
+        color: #6c757d;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .comparison-table img {
+        max-width: 180px;
+        max-height: 180px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .btn-return-products {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #084298;
+    color: #ffffff;
+    text-decoration: none;
+    border: 1px solid #084298;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    }
+
+    .btn-return-products:hover {
+        background-color: #06357a;
+        border-color: #06357a;
+        color: #ffffff;
+    }
+
+    @media (max-width: 576px) {
+        .comparison-page {
+            margin: 16px auto;
+            padding: 16px;
+        }
+
+        .comparison-page-title {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    {% if comparison_products %}
+
+        <div class="comparison-page">
+
+            <h1 class="comparison-page-title">Product comparison</h1>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle text-center comparison-table">
+
+                    <thead>
+                        <tr>
+                            <th>Characteristic</th>
+
+                            {% for item in comparison_products %}
+                                <th>
+                                    {{ item.product.name }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <th>Image</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    {% if item.product.image %}
+                                        <img
+                                            src="{{ item.product.image.url }}"
+                                            alt="{{ item.product.name }}"
+                                        >
+                                    {% else %}
+                                        No image
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                        <tr>
+                            <th>Price</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    <strong>
+                                        {{ item.product.price }} $
+                                    </strong>
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                        <tr>
+                            <th>Category</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    {{ item.product.category.name }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                        <tr>
+                            <th>In stock</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    {{ item.product.stock }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                        <tr>
+                            <th>Description</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    {{ item.product.description }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                        {% for item in comparison_products %}
+                            {% if forloop.first %}
+                                {% for parameter in item.product.parameters.all %}
+                                    <tr>
+                                        <th>{{ parameter.name }}</th>
+
+                                        {% for comparison_item in comparison_products %}
+                                            <td>
+                                                {% for comparison_parameter in comparison_item.product.parameters.all %}
+                                                    {% if comparison_parameter.name == parameter.name %}
+                                                        {{ comparison_parameter.value }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <tr>
+                            <th>Action</th>
+
+                            {% for item in comparison_products %}
+                                <td>
+                                    <a
+                                        href="{% url 'product_detail' item.product.id %}"
+                                        class="btn btn-primary mb-1"
+                                    >
+                                        Read more
+                                    </a>
+
+                                    <a
+                                        href="{% url 'toggle_comparison' item.product.id %}"
+                                        class="btn btn-outline-danger mb-1"
+                                    >
+                                        Put away
+                                    </a>
+                                </td>
+                            {% endfor %}
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="comparison-page">
+
+            <h1 class="comparison-page-title">Product comparison</h1>
+
+            <div class="comparison-empty">
+
+                <div class="comparison-empty-icon">⇄</div>
+
+                <h2>The comparison list is currently empty</h2>
+
+                <p>
+                    Add products to the comparison to see
+                    their specifications side by side.
+                </p>
+
+                <a href="{% url 'home' %}" class="btn-return-products">
+                    ← Back to products
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

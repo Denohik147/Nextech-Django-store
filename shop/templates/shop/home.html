@@ -1,0 +1,648 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}
+Главная - NexTech
+{% endblock %}
+
+{% block content %}
+
+
+<div class="row">
+
+
+    <!--Левая панель Categories -->
+
+    <div class="col-md-3 mb-4">
+
+        <div class="card category-card categories-sidebar">
+
+            <div class="card-body">
+
+                <h2 class="h5 mb-3 category-title">
+                    ☰&nbsp;&nbsp;Product Catalog
+                </h2>
+
+
+                <!-- Все товары -->
+
+                <a
+                    href="{% url 'home' %}" 
+                    class="category-link"
+                >
+                    <span>All products</span>
+                    <span class="category-arrow">&gt;</span>
+                </a>
+
+
+                <!-- Категории -->
+
+                {% for category in categories %}
+
+                    <a
+                        href="{% url 'category_detail' category.id %}"
+                        class="category-link {% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}"
+                    >
+                        <span>{{ category.name }}</span>
+                        <span class="category-arrow">&gt;</span>
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div> 
+
+    <!-- Правая часть страницы -->
+
+    <div class="col-md-9">
+         
+        {% if not selected_category %}
+
+            <!-- Банеры NexTech -->
+            <section class="nextech-banners">
+                
+                <div class="banner-track">
+
+                    <div class="banner-slide banner-slide-1 active">
+                        <div class="banner-content">
+                            <span class="banner-label">NEXTECH STORE</span>
+                            <h2>Technology of the Future</h2>
+                            <p>Discover a world of modern devices</p>
+                        </div>
+                        <span class="banner-number">01 / 03</span>
+                    </div>
+
+                    <div class="banner-slide banner-slide-2">
+                        <div class="banner-content">
+                            <span class="banner-label">SMARTPHONES</span>
+                            <h2>Your Next Smartphone</h2>
+                            <p>Power, style, and technology in one device</p>
+                        </div>
+                        <span class="banner-number">02 / 03</span>
+                    </div>
+
+                    <div class="banner-slide banner-slide-3">
+                        <div class="banner-content">
+                            <span class="banner-label">NEXT LEVEL</span>
+                            <h2>Upgrade Your Tech</h2>
+                            <p>Find the devices that fit your lifestyle</p>
+                        </div>
+                        <span class="banner-number">03 / 03</span>
+                    </div>
+
+                </div>
+
+                <button type="button" class="banner-arrow banner-prev"
+                        aria-label="Предыдущий баннер">&#8592;</button>
+
+                <button type="button" class="banner-arrow banner-next"
+                        aria-label="Следующий баннер">&#8594;</button>
+            
+                <div class="banner-indicators">
+                    <span class="banner-indicator active"></span>
+                    <span class="banner-indicator"></span>
+                    <span class="banner-indicator"></span>
+                </div>
+
+            </section>
+
+            <!-- Product Categories правая часть -->
+            
+            <section class="photo-categories-section mb-4">
+
+                <h2 class="h4 mb-3">Product categories</h2>
+
+                <div class="row g-3">
+
+                    {% for category in categories %}
+
+                        <div class="col-6 col-md-3">
+
+                            <a
+                                href="{% url 'category_detail' category.id %}"
+                                class="photo-category-card"
+                                aria-label="Открыть категорию {{ category.name }}"
+                            >
+                                {% if category.image %}
+
+                                    <img
+                                        src="{{ category.image.url }}"
+                                        alt="{{ category.name }}"
+                                        class="photo-category-image"
+                                    >
+                                    
+                                {% else %}
+                                
+                                    <div class="photo-category-placeholder">
+                                        {{ category.name }}
+                                    </div>
+                                
+                                {% endif %}
+                                
+                                <div class="photo-category-overlay">
+                                    <h3>{{ category.name }}</h3>
+                                </div>
+                        
+                            </a>
+
+                        </div>
+
+                    {% endfor %}
+                        
+                </div>
+
+            </section>
+
+        {% endif %}
+
+        <!-- Заголовок перед товарами -->
+
+        <h2 class="all-products-title">
+            {% if selected_category %}
+                {{ selected_category.name }}
+            {% else %}
+                All products
+            {% endif %}        
+        </h2>
+
+        <!-- Существующие карточки товаров -->
+
+        <div class="row">
+
+            {% for product in products %}
+
+                <div class="col-md-4 mb-4">
+
+                    <div 
+                        class="card h-100 product-card"
+                        data-product-url="{% url 'product_detail' product.id %}"
+                    >
+
+                        {% if user.is_authenticated %}
+
+                            <div class="product-actions">
+
+                                <a
+                                    href="{% url 'toggle_favorite' product.id %}"
+                                    class="product-action"
+                                    title="Добавить в избранное"
+                                >
+                                    ♡
+                                </a>
+                                
+                                <a
+                                    href="{% url 'toggle_comparison' product.id %}"
+                                    class="product-action"
+                                    title="Добавить в сравнение"
+                                >
+                                    ⇄
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+                        
+                        {% if product.image %}
+
+                            <img
+                                src="{{ product.image.url }}"
+                                class="card-img-top"
+                                alt="{{ product.name }}"
+                            >    
+
+                        {% endif %}
+                        
+                        
+                        <div class="card-body d-flex flex-column">
+
+                            <h2 class="card-title h5 product-title">
+                                <a href="{% url 'product_detail' product.id %}">
+                                    {{ product.name }}
+                                </a>
+                            </h2>
+
+                            <p class="card-text">
+                                {{ product.description }}
+                            </p>
+
+                            <p class="fw-bold mt-auto">
+                                {{ product.price|floatformat:0 }} USD$
+                            </p>
+
+                            <P>
+                                In stock {{ product.stock }}
+                            </P>
+                        
+                            <a
+                                href="{% url 'product_detail' product.id %}"
+                                class="btn btn-buy"
+                            >
+                                Buy
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning">
+                        No products found
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .photo-categories-section {
+        width: 100%;
+    }
+
+    .photo-category-card {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 150px;
+        overflow: hidden;
+        isolation: isolate;
+        background: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 10px;
+        text-decoration: none;
+
+        --mouse-x: 50%;
+        --mouse-y: 50%;
+
+        transition:
+            border-color 0.25s ease,
+            border-radius 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .photo-category-card:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0;
+
+        background: radial-gradient(
+            circle 120px at var(--mouse-x) var(--mouse-y),
+            rgba(8, 66, 152, 0.75),
+            transparent 75%
+        );
+
+        transition: opacity 0.2s ease;
+    }
+
+    .photo-category-card:hover {
+        border-color: #084298;
+        border-radius: 3px;
+        transform: scale(0.97);
+
+        box-shadow:
+            inset 0 0 18px rgba(8, 66, 152, 0.45),
+            0 0 12px rgba(8, 66, 152, 0.5);
+    }
+
+    .photo-category-card:hover::before {
+        opacity: 1;
+    }
+
+    .photo-category-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        object-fit: contain;
+
+        transition:
+            transform 0.35s ease,
+            filter 0.35s ease;
+    }
+
+    .photo-category-card:hover .photo-category-image {
+        transform: scale(1.06);
+        filter: brightness(0.8);
+    }
+
+    .photo-category-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        background: linear-gradient(
+            135deg,
+            #101827,
+            #084298
+        );
+    }
+
+    .photo-category-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+
+        display: flex;
+        align-items: flex-end;
+        padding: 12px;
+
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.85),
+            transparent 75%
+        );
+
+        pointer-events: none;
+    }
+
+    .photo-category-overlay h3 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.3;
+        text-shadow: 0 1px 5px #000000;
+    }
+
+    @media (max-width: 576px) {
+        .photo-category-card {
+            height: 125px;
+        }
+
+        .photo-category-overlay {
+            padding: 8px;
+        }
+
+        .photo-category-overlay h3 {
+            font-size: 13px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .photo-category-card,
+        .photo-category-image,
+        .photo-category-card::before {
+            transition: none;
+        }
+    }
+
+
+    /* Баннеры NexTech */
+    .nextech-banners {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: 1px solid rgba(40, 120, 255, 0.35);
+        border-radius: 16px;
+        background: #071326;
+        box-shadow: 0 8px 30px rgba(0, 15, 45, 0.25);
+    }
+
+    .banner-track {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .banner-slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 35px 75px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(25px);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+        background: linear-gradient(110deg, #071326, #102c55);
+    }
+
+    .banner-slide-2 {
+        background: linear-gradient(110deg, #06152b, #123e70);
+    }
+
+    .banner-slide-3 {
+        background: linear-gradient(110deg, #080f24, #172c56);
+    }
+
+    .banner-slide.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .banner-content {
+        max-width: 650px;
+        color: #ffffff;
+    }
+
+    .banner-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        color: #5ba7ff;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 3px;
+    }
+
+    .banner-content h2 {
+        margin: 0 0 12px;
+        font-size: clamp(24px, 3vw, 38px);
+        font-weight: 700;
+    }
+
+    .banner-content p {
+        margin: 0;
+        color: #c5d5ec;
+        font-size: 16px;
+    }
+
+    .banner-number {
+        align-self: flex-end;
+        color: #8abaff;
+        font-size: 13px;
+        letter-spacing: 2px;
+    }
+
+    .banner-arrow {
+        position: absolute;
+        top: 50%;
+        z-index: 2;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(100, 170, 255, 0.5);
+        border-radius: 50%;
+        background: rgba(4, 20, 43, 0.85);
+        color: #ffffff;
+        font-size: 22px;
+        cursor: pointer;
+        transform: translateY(-50%);
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .banner-arrow:hover {
+        background: #084298;
+        box-shadow: 0 0 18px rgba(40, 120, 255, 0.55);
+    }
+
+    .banner-prev {
+        left: 16px;
+    }
+
+    .banner-next {
+        right: 16px; 
+    }
+
+    .banner-indicators {
+        position: absolute;
+        bottom: 16px; 
+        left: 50%;
+        z-index: 2;
+        display: flex;
+        gap: 8px;
+        transform: translateX(-50%);
+    }
+
+    .banner-indicator {
+        width: 22px;
+        height: 4px;
+        border-radius: 4px;
+        background: #52647e;
+        transition: background 0.2s ease;
+    }
+
+    .banner-indicator.active {
+        background: #4b9cff;
+    }
+
+    @media (max-width: 600px) {
+        .nextech-banners {
+            height: 230px;
+        }
+        
+        .banner-slide {
+            padding: 30px 55px;
+        }
+
+        .banner-content p {
+            font-size: 14px;
+        }
+
+        .banner-number {
+            display: none;
+        }
+    }
+
+</style>
+
+
+<script>
+    
+    document.querySelectorAll('.photo-category-card').forEach(function(card) {
+
+        card.addEventListener('mousemove', function(event) {
+
+            const rect = card.getBoundingClientRect();
+
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            card.style.setProperty('--mouse-x', x + 'px');
+            card.style.setProperty('--mouse-y', y + 'px');
+
+        });
+
+        card.addEventListener('mouseleave', function() {
+             
+            card.style.setProperty('--mouse-x', '50%');
+            card.style.setProperty('--mouse-y', '50%');
+
+        });
+
+    });
+    
+
+    document.querySelectorAll('.product-card').forEach(function(card) {
+
+        card.addEventListener('click', function(event) {
+
+            if (
+                event.target.closest('.product-actions') ||
+                event.target.closest('.btn-buy') ||
+                event.target.closest('a')
+            ) {
+                return;
+            }
+
+            window.location.href = card.dataset.productUrl;
+        });
+
+    });
+
+    
+    
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.banner-slide');
+    const indicators = document.querySelectorAll('.banner-indicator');
+    const prevButton = document.querySelector('.banner-prev');
+    const nextButton = document.querySelector('.banner-next');
+
+    if (!slides.length || !prevButton || !nextButton) {
+        return;
+    }
+
+    let currentIndex = 0;
+
+    function showBanner(index) {
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === currentIndex);
+        });
+
+        indicators.forEach((indicator, i) => {
+            indicator.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    prevButton.addEventListener('click', function () {
+        showBanner(currentIndex - 1);
+    });
+
+    nextButton.addEventListener('click', function () {
+        showBanner(currentIndex + 1);
+    });
+});
+
+</script>
+
+
+{% endblock %}

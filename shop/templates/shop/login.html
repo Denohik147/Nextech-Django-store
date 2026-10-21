@@ -1,0 +1,374 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}
+Log in — NexTech
+{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+
+    <div class="login-card">
+
+        <div class="login-neon"></div>
+
+        <h1>Log in</h1>
+
+        <p class="login-description">
+            Log in to track your orders, use the comparison list,
+            and complete your purchases faster.
+        </p>
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="login-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">
+                    Email
+                </label>
+
+                {{ form.email }}
+
+                {% if form.email.errors %}
+                    <div class="field-error">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">
+                    Password
+                </label>
+
+                {{ form.password }}
+
+                {% if form.password.errors %}
+                    <div class="field-error">
+                        {{ form.password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="login-button-wrapper">
+                <button type="submit" class="login-button">
+                    Log in
+                </button>
+            </div>
+
+        </form>
+
+        <div class="account-benefits">
+
+            <h2>What an account provides</h2>
+
+            <ul class="benefits-list">
+                <li>Order history and delivery statuses</li>
+                <li>Favorites and comparison across all devices</li>
+                <li>Personalized promotions and price reductions</li>
+                <li>The address and contact details are automatically added to the order</li>
+            </ul>
+
+        </div>
+
+        <div class="login-register">
+            <span>Don't have an account?</span>
+
+            <a href="{% url 'register' %}">
+                Sign up
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_css %}
+<style>
+
+    .login-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 20px;
+    }
+
+    .login-card {
+        position: relative;
+
+        width: 100%;
+        max-width: 500px;
+
+        padding: 30px 36px;
+
+        background: #ffffff;
+
+        border: 1px solid #000000;
+        border-radius: 10px;
+
+        box-sizing: border-box;
+    }
+
+    .login-neon {
+        position: absolute;
+
+        top: -2px;
+        left: 8%;
+        right: 8%;
+
+        height: 3px;
+
+        background: #084298;
+
+        border-radius: 10px;
+
+        box-shadow:
+            0 0 5px #084298,
+            0 0 12px #084298,
+            0 0 22px rgba(8, 66, 152, 0.8);
+    }
+
+    /* Заголовок */
+
+    .login-card h1 {
+        margin: 0;
+
+        text-align: center;
+
+        color: #084298;
+
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+
+    /* Описание */
+
+    .login-description {
+        max-width: 420px;
+
+        margin: 10px auto 24px;
+
+        text-align: center;
+
+        color: #6c757d;
+
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    /* Поля */
+
+    .login-form .form-group {
+        margin-bottom: 18px;
+    }
+
+    .login-form label {
+        display: block;
+
+        margin-bottom: 6px;
+
+        color: #212529;
+
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .login-form input {
+        display: block;
+
+        width: 100%;
+        height: 42px;
+
+        padding: 8px 11px;
+
+        border: 1px solid #000000;
+        border-radius: 7px;
+
+        background: #ffffff;
+
+        color: #212529;
+
+        font-size: 0.9rem;
+
+        box-sizing: border-box;
+    }
+
+    .login-form input:focus {
+        border-color: #084298;
+
+        outline: none;
+
+        box-shadow:
+            0 0 0 2px rgba(8, 66, 152, 0.15),
+            0 0 8px rgba(8, 66, 152, 0.25);
+    }
+
+    /* Кнопка */
+
+    .login-button-wrapper {
+        display: flex;
+        justify-content: flex-end;
+
+        margin-top: 4px;
+    }
+
+    .login-button {
+        min-width: 100px;
+        height: 40px;
+
+        padding: 0 20px;
+
+        border: none;
+        border-radius: 7px;
+
+        background: #084298;
+        color: #ffffff;
+
+        font-size: 0.9rem;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+            background-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .login-button:hover {
+        background: #052c65;
+
+        box-shadow:
+            0 0 6px #084298,
+            0 0 14px rgba(8, 66, 152, 0.75),
+            0 0 24px rgba(8, 66, 152, 0.4);
+
+        transform: translateY(-1px);
+    }
+
+    /* Ошибки */
+
+    .login-error {
+        margin-bottom: 18px;
+
+        padding: 9px 11px;
+
+        border: 1px solid #dc3545;
+        border-radius: 7px;
+
+        background: #f8d7da;
+        color: #842029;
+
+        font-size: 0.88rem;
+    }
+
+    .field-error {
+        margin-top: 4px;
+
+        color: #dc3545;
+
+        font-size: 0.8rem;
+    }
+
+    /* Что даёт аккаунт */
+
+    .account-benefits {
+        margin-top: 24px;
+        padding-top: 20px;
+
+        border-top: 1px solid #dee2e6;
+    }
+
+    .account-benefits h2 {
+        margin: 0 0 10px;
+
+        color: #212529;
+
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .account-benefits ul {
+        margin: 0;
+        padding: 0;
+
+        list-style: none;
+
+        color: #495057;
+
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .benefits-list li {
+        position: relative;
+
+        padding-left: 22px;
+    }
+
+    .benefits-list li::before {
+        content: "✓";
+
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        color: #084298;
+
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    /* Регистрация */
+
+    .login-register {
+        margin-top: 20px;
+
+        padding-top: 16px;
+
+        border-top: 1px solid #dee2e6;
+
+        text-align: center;
+
+        color: #6c757d;
+
+        font-size: 0.85rem;
+    }
+
+    .login-register a {
+        margin-left: 5px;
+
+        color: #084298;
+
+        font-weight: 600;
+
+        text-decoration: none;
+    }
+
+    .login-register a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+
+        .login-page {
+            padding: 35px 15px;
+        }
+
+        .login-card {
+            padding: 26px 22px;
+        }
+
+    }
+
+</style>
+{% endblock %}
