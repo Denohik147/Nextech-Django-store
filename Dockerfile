@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 8000
 
 # Запускаем Gunicorn
-CMD ["sh", "-c", "gunicorn online_store.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn online_store.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
