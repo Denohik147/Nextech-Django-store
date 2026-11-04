@@ -1,4 +1,3 @@
-
 """
 Django settings for online_store project.
 
@@ -12,6 +11,7 @@ import dj_database_url
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
+
 # Build paths inside the project.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,10 +24,40 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv(
-    "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
-).split(",")
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "ALLOWED_HOSTS",
+        "localhost,127.0.0.1",
+    ).split(",")
+    if host.strip()
+]
+
+# Automatically add Render hostname when running on Render.
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# Render terminates HTTPS at its proxy and forwards X-Forwarded-Proto.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Render already redirects HTTP traffic to HTTPS.
+# Secure cookies are enabled in production.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+# CSRF trusted origins.
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://nextech-django-store.onrender.com",
+    ).split(",")
+    if origin.strip()
+]
+
 
 # Authentication settings
 LOGIN_URL = "/login/"
@@ -43,12 +73,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "cloudinary_storage",
     "cloudinary",
-    
+    "anymail",
+
     "shop",
     "api",
     "rest_framework",
     "django_filters",
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -61,7 +93,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "online_store.urls"
+
 
 TEMPLATES = [
     {
@@ -80,12 +114,14 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "online_store.wsgi.application"
 
 
 # Database
 # By default, use the existing local SQLite database.
 # Switch to Neon only when USE_NEON=True.
+
 USE_NEON = os.getenv("USE_NEON", "False").lower() == "true"
 
 if USE_NEON:
@@ -173,25 +209,20 @@ USE_TZ = True
 
 # Static files and uploaded media
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-# Email
+# Email configuration — Resend HTTP API
+ANYMAIL = {
+    "RESEND_API_KEY": os.environ["RESEND_API_KEY"],
+}
+
 MAILERS = {
     "default": {
-        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-        "OPTIONS": {
-            "host": "smtp.resend.com",
-            "port": 465,
-            "username": "resend",
-            "password": os.environ["RESEND_API_KEY"],
-            "use_ssl": True,
-            "timeout": 10,
-        },
+        "BACKEND": "anymail.backends.resend.EmailBackend",
     },
 }
 
@@ -200,16 +231,21 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "onboarding@resend.dev",
 )
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
 
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
+# Django REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": (
+        "rest_framework.pagination.PageNumberPagination"
+    ),
+    "PAGE_SIZE": 10,
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
     ],
 }
 
+
+# Redis cache
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
