@@ -23,6 +23,14 @@ __pycache__/
 # User-uploaded media
 media/
 
+# Generated static files
+staticfiles/
+
+# Backup and temporary scripts
+data_backup.json
+transfer_images.py
+transfer_one_image.py
+
 # Logs
 *.log
 

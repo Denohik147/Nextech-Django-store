@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: nextech_web
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: gunicorn online_store.wsgi:application --bind 0.0.0.0:8000
+
+  redis:
+    image: redis:7-alpine
+    container_name: nextech_redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

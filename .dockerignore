@@ -1,0 +1,32 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Local database and media
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Backup and temporary scripts
+data_backup.json
+transfer_images.py
+transfer_one_image.py
