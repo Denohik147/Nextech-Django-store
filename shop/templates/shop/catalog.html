@@ -7,7 +7,7 @@
 {% block content %}
 
     <h1 class="mb-4">
-        Каталог товаров
+        Product Catalog
     </h1>
     
     <div class="card mb-4">
@@ -15,7 +15,7 @@
         <div class="card-body">
 
             <h2 class="h5 mb-3">
-                Поиск и фильтрация
+                Search and Filter
             </h2>
 
             <form method="get">
@@ -36,7 +36,7 @@
                             id="search"
                             name="search"
                             class="form-control"
-                            placeholder="Введите название товара..."
+                            placeholder="Search for products..."
                             value="{{ request.GET.search|default:'' }}"
                         >
 
@@ -84,7 +84,7 @@
                             type="submit"
                             class="btn btn-primary w-100"
                         >
-                            Найти
+                            Find
                         </button>
 
                     </div>
@@ -99,7 +99,7 @@
                     href="{% url 'catalog' %}"
                     class="btn btn-outline-secondary btn-sm"
                 >
-                    Сбросить фильтры
+                    Reset Filters
                 </a>
 
             </div>
@@ -144,7 +144,7 @@
                         </p>
 
                         <p class="fw-bold">
-                            Цена: {{ product.price}} $
+                            Price: {{ product.price}} $
                         </p>
 
                         <p>
@@ -155,7 +155,7 @@
                             href="{% url 'product_detail' product.id %}"
                             class="btn btn-primary"
                         >
-                            Подробнее
+                            View Details
                         </a>
                             
                     </div>
