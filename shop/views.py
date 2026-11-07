@@ -46,7 +46,7 @@ def category_detail(request, category_id):
     search = request.GET.get('search')
 
     if search:
-        products = products.filter(name_icontains=search)
+        products = products.filter(name__icontains=search)
 
     return render(request, 'shop/home.html', {
         'products': products,
